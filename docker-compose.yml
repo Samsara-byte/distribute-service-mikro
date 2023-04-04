@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  server:
+    build: ./server/.
+    ports:
+      - "8787:8787"
+    depends_on:
+      - redis
+      - rabbitmq
+
+  setup:
+    build: ./setup/.
+    depends_on:
+      - server
+
+  delivering:
+    build: ./delivering/.
+    depends_on:
+      - setup
+
+  delivered:
+    build: ./delivered/.
+    depends_on:
+      - delivering
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    restart: always
